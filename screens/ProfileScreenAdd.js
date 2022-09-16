@@ -8,22 +8,57 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 export default function ProfileScreenAdd() {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: { display: "none" },
+    });
+    return () => {
+      navigation.getParent().setOptions({
+        tabBarLabel: "PROFILE",
+        tabBarLabelStyle: { color: "white", fontSize: 24 },
+        tabBarIconStyle: { display: "none" },
+        tabBarStyle: {
+          backgroundColor: "#63A4FF",
+          borderTopWidth: 1,
+          borderTopColor: "#004BA0",
+          display: "flex",
+        },
+      });
+    };
+  }, [navigation]);
+
   return (
     // Fragment is used to split the SafeAreaView so that the top and bottom can be styled differently.
     <Fragment>
       <SafeAreaView
         style={{ flex: 0, backgroundColor: "#004BA0" }}
       ></SafeAreaView>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#1976D2" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <View style={styles.titleHeader}>
-          <Text style={styles.title}>PROFILE</Text>
+          <Text style={styles.title}>ADD ROLE</Text>
           <Text style={styles.title}>icon</Text>
         </View>
         <View style={styles.container}>
-          <Text>Hello World</Text>
+          <View style={styles.loginContainer}>
+            <Text style={styles.loginText}>Role:</Text>
+            <TextInput
+              style={styles.loginInput}
+              value={"username"}
+              onChangeText={"setUsername"}
+            />
+            <Text style={styles.loginText}>Passing Date:</Text>
+            <TextInput
+              style={styles.loginInput}
+              value={"password"}
+              onChangeText={"setPassword"}
+            />
+          </View>
         </View>
       </SafeAreaView>
     </Fragment>
@@ -35,6 +70,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingHorizontal: 40,
+    backgroundColor: "white",
   },
   titleHeader: {
     width: "100%",
@@ -49,5 +85,22 @@ const styles = StyleSheet.create({
   title: {
     color: "white",
     fontSize: 40,
+  },
+  loginContainer: {
+    width: "100%",
+  },
+  loginText: {
+    color: "black",
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 16,
+    marginBottom: 8,
+    marginLeft: 10,
+  },
+  loginInput: {
+    backgroundColor: "#D9D9D9",
+    height: 34,
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
 });

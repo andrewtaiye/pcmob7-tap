@@ -39,7 +39,9 @@ export default function ProfileScreenHome() {
             <View style={styles.displayHeader}>
               <Text style={styles.displayHeaderText}>ROLES:</Text>
               <TouchableOpacity
-                onPress={navigation.navigate(PROFILE_SCREEN.Add)}
+                onPress={() => {
+                  navigation.navigate(PROFILE_SCREEN.Add);
+                }}
               >
                 <Text>Icon</Text>
               </TouchableOpacity>
