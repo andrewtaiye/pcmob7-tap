@@ -6,6 +6,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import React, { Fragment, useState } from "react";
@@ -61,65 +62,67 @@ export default function AuthScreen() {
         <View style={styles.logoTitleHeader}>
           <Image style={styles.logoTitle} source={logoTitle} />
         </View>
-        <View style={styles.container}>
-          <Image style={styles.logo} source={logo} />
-          <View style={styles.loginContainer}>
-            <Text style={styles.loginText}>Username:</Text>
-            <TextInput
-              style={styles.loginInput}
-              value={username}
-              onChangeText={setUsername}
-              textContentType={"username"}
-            />
-            <Text style={styles.loginText}>Password:</Text>
-            <TextInput
-              style={styles.loginInput}
-              value={password}
-              onChangeText={setPassword}
-              textContentType={"password"}
-              secureTextEntry={true}
-            />
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View style={styles.container}>
+            <Image style={styles.logo} source={logo} />
+            <View style={styles.loginContainer}>
+              <Text style={styles.loginText}>Username:</Text>
+              <TextInput
+                style={styles.loginInput}
+                value={username}
+                onChangeText={setUsername}
+                textContentType={"username"}
+              />
+              <Text style={styles.loginText}>Password:</Text>
+              <TextInput
+                style={styles.loginInput}
+                value={password}
+                onChangeText={setPassword}
+                textContentType={"password"}
+                secureTextEntry={true}
+              />
 
-            {/* Checks if the login screen state is set to true. If false (register screen), then include the confirm password elements. */}
+              {/* Checks if the login screen state is set to true. If false (register screen), then include the confirm password elements. */}
 
-            {!isLoginScreen && (
-              <>
-                <Text style={styles.loginText}>Confirm Password:</Text>
-                <TextInput
-                  style={styles.loginInput}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  textContentType={"password"}
-                  secureTextEntry={true}
-                />
-              </>
-            )}
+              {!isLoginScreen && (
+                <>
+                  <Text style={styles.loginText}>Confirm Password:</Text>
+                  <TextInput
+                    style={styles.loginInput}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    textContentType={"password"}
+                    secureTextEntry={true}
+                  />
+                </>
+              )}
 
-            <View style={styles.flexRow}>
-              {/* If the current screen is the login screen, run the login function. If it is not (i.e. currently on the register screen), return to login screen. */}
-              <TouchableOpacity
-                style={styles.button}
-                onPress={async () => {
-                  // prettier-ignore
-                  isLoginScreen ? await login() : setIsLoginScreen(!isLoginScreen);
-                }}
-              >
-                <Text style={styles.buttonText}>Login</Text>
-              </TouchableOpacity>
+              <View style={styles.flexRow}>
+                {/* If the current screen is the login screen, run the login function. If it is not (i.e. currently on the register screen), return to login screen. */}
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={async () => {
+                    // prettier-ignore
+                    isLoginScreen ? await login() : setIsLoginScreen(!isLoginScreen);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
 
-              {/* If the current screen is the login screen, change the screen to the register screen. If it is not (i.e. currently on the register screen), run the register function. */}
-              <TouchableOpacity
-                style={styles.button}
-                onPress={async () => {
-                  // prettier-ignore
-                  isLoginScreen ? setIsLoginScreen(!isLoginScreen) : await signUp();
-                }}
-              >
-                <Text style={styles.buttonText}>Register</Text>
-              </TouchableOpacity>
+                {/* If the current screen is the login screen, change the screen to the register screen. If it is not (i.e. currently on the register screen), run the register function. */}
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={async () => {
+                    // prettier-ignore
+                    isLoginScreen ? setIsLoginScreen(!isLoginScreen) : await signUp();
+                  }}
+                >
+                  <Text style={styles.buttonText}>Register</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </SafeAreaView>
     </Fragment>
   );

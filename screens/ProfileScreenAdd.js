@@ -1,18 +1,25 @@
 import {
   Image,
+  Keyboard,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function ProfileScreenAdd() {
   const navigation = useNavigation();
+  const [role, setRole] = useState("");
+  const [dateDay, setDateDay] = useState("");
+  const [dateMonth, setDateMonth] = useState("");
+  const [dateYear, setDateYear] = useState("");
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -41,14 +48,41 @@ export default function ProfileScreenAdd() {
           <Text style={styles.title}>ADD ROLE</Text>
           <Text style={styles.title}>icon</Text>
         </View>
-        <View style={styles.container}>
-          <View style={styles.loginContainer}>
-            <Text style={styles.loginText}>Role:</Text>
-            <TextInput style={styles.loginInput} value={""} onChangeText={""} />
-            <Text style={styles.loginText}>Passing Date:</Text>
-            <TextInput style={styles.loginInput} value={""} onChangeText={""} />
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View style={styles.container}>
+            <View style={styles.loginContainer}>
+              <Text style={styles.loginText}>Role:</Text>
+              <TextInput
+                style={styles.loginInput}
+                value={""}
+                onChangeText={""}
+              />
+              <Text style={styles.loginText}>Passing Date:</Text>
+              <View style={styles.dates}>
+                <TextInput
+                  style={styles.dateInput}
+                  value={dateDay}
+                  onChangeText={setDateDay}
+                  keyboardType={"numeric"}
+                />
+                <Text>/</Text>
+                <TextInput
+                  style={styles.dateInput}
+                  value={dateMonth}
+                  onChangeText={setDateMonth}
+                  keyboardType={"numeric"}
+                />
+                <Text>/</Text>
+                <TextInput
+                  style={styles.dateInput}
+                  value={dateYear}
+                  onChangeText={setDateYear}
+                  keyboardType={"numeric"}
+                />
+              </View>
+            </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </SafeAreaView>
     </Fragment>
   );
@@ -77,6 +111,7 @@ const styles = StyleSheet.create({
   },
   loginContainer: {
     width: "100%",
+    marginTop: 34,
   },
   loginText: {
     color: "black",
@@ -91,5 +126,21 @@ const styles = StyleSheet.create({
     height: 34,
     paddingHorizontal: 10,
     borderRadius: 10,
+    fontSize: 20,
+  },
+  dates: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  dateInput: {
+    backgroundColor: "#D9D9D9",
+    height: 34,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    width: "25%",
+    fontSize: 20,
+    textAlign: "center",
   },
 });
