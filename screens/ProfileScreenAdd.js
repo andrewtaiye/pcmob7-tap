@@ -20,9 +20,6 @@ export default function ProfileScreenAdd() {
     });
     return () => {
       navigation.getParent().setOptions({
-        tabBarLabel: "PROFILE",
-        tabBarLabelStyle: { color: "white", fontSize: 24 },
-        tabBarIconStyle: { display: "none" },
         tabBarStyle: {
           backgroundColor: "#63A4FF",
           borderTopWidth: 1,
@@ -47,17 +44,9 @@ export default function ProfileScreenAdd() {
         <View style={styles.container}>
           <View style={styles.loginContainer}>
             <Text style={styles.loginText}>Role:</Text>
-            <TextInput
-              style={styles.loginInput}
-              value={"username"}
-              onChangeText={"setUsername"}
-            />
+            <TextInput style={styles.loginInput} value={""} onChangeText={""} />
             <Text style={styles.loginText}>Passing Date:</Text>
-            <TextInput
-              style={styles.loginInput}
-              value={"password"}
-              onChangeText={"setPassword"}
-            />
+            <TextInput style={styles.loginInput} value={""} onChangeText={""} />
           </View>
         </View>
       </SafeAreaView>
