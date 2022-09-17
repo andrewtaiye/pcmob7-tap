@@ -10,13 +10,29 @@ import {
   View,
 } from "react-native";
 import React, { Fragment, useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { ASSESSMENTS_SCREEN } from "../constants";
+
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function AssessmentScreenAdd() {
   const exitBtn = require("../assets/exit_btn.png");
 
   const navigation = useNavigation();
+  const route = useRoute();
+  const params = route.params;
+  const choice = params.choice;
+
+  const [user, setUser] = useState({});
+
   const [instructor, setInstructor] = useState("");
   const [dateDay, setDateDay] = useState("");
   const [dateMonth, setDateMonth] = useState("");
@@ -43,8 +59,46 @@ export default function AssessmentScreenAdd() {
     };
   }, [navigation]);
 
+  useEffect(() => {
+    getData();
+  }, []);
+
+  async function getData() {
+    // prettier-ignore
+    const snapshot = await doc(db, 'users', where('name', '==', 'user1'))
+    setUser(snapshot);
+  }
+
   function addAssessment() {
-    console.log("Adding Assessment!");
+    const id = 4;
+
+    const newAssessment = {
+      roles: {
+        [choice]: {
+          [`assessment${id}`]: {
+            id: id,
+            instructor: instructor,
+            dateDay: parseInt(dateDay),
+            dateMonth: parseInt(dateMonth),
+            dateYear: parseInt(dateYear),
+            objective: objective,
+            gradeA: parseInt(gradeA),
+            gradeB: parseInt(gradeB),
+            gradeC: parseInt(gradeC),
+            pass: passFail.toLowerCase() === "true",
+          },
+        },
+      },
+    };
+
+    setDoc(user, newAssessment, { merge: true })
+      .then(() => {
+        console.log("Adding Assessment!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     navigation.navigate(ASSESSMENTS_SCREEN.Home);
   }
 
@@ -106,18 +160,21 @@ export default function AssessmentScreenAdd() {
                   style={[styles.textInput, styles.gradesInput]}
                   value={gradeA}
                   onChangeText={setGradeA}
+                  keyboardType={"numeric"}
                 />
                 <Text style={styles.labels}>B: </Text>
                 <TextInput
                   style={[styles.textInput, styles.gradesInput]}
                   value={gradeB}
                   onChangeText={setGradeB}
+                  keyboardType={"numeric"}
                 />
                 <Text style={styles.labels}>C: </Text>
                 <TextInput
                   style={[styles.textInput, styles.gradesInput]}
                   value={gradeC}
                   onChangeText={setGradeC}
+                  keyboardType={"numeric"}
                 />
               </View>
               <Text style={styles.labels}>Pass / Fail:</Text>

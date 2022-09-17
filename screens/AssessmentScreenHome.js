@@ -20,6 +20,8 @@ export default function AssessmentScreenHome() {
   const addBtn = require("../assets/add_btn.png");
   const exitBtn = require("../assets/exit_btn.png");
 
+  const [username, setUsername] = useState("");
+
   const navigation = useNavigation();
   const [choice, setChoice] = useState("");
   const [roles, setRoles] = useState({});
@@ -28,7 +30,7 @@ export default function AssessmentScreenHome() {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [navigation]);
 
   useEffect(() => {
     const pickedRoleAssessments = roles[choice];
@@ -50,6 +52,7 @@ export default function AssessmentScreenHome() {
     const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "user1")));
     const user = snapshot.docs.map((doc) => doc.data())[0];
     const data = user.roles;
+    setUsername(user.name);
     setRoles(data);
     const rolesChoice = [];
     for (const key in data) {
@@ -101,7 +104,11 @@ export default function AssessmentScreenHome() {
           titleStyle={styles.displayItemTitle}
           descriptionStyle={[styles.edit, styles.displayItemDescription]}
           onPress={() => {
-            navigation.navigate(ASSESSMENTS_SCREEN.Update, { ...item, choice });
+            navigation.navigate(ASSESSMENTS_SCREEN.Update, {
+              ...item,
+              choice,
+              username,
+            });
           }}
           title=""
           description="Edit"
@@ -146,7 +153,7 @@ export default function AssessmentScreenHome() {
               </Text>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate(ASSESSMENTS_SCREEN.Add);
+                  navigation.navigate(ASSESSMENTS_SCREEN.Add, { choice });
                 }}
               >
                 <Image style={styles.logoTitle} source={addBtn} />
