@@ -48,8 +48,8 @@ export default function AssessmentScreenHome() {
   async function getData() {
     // prettier-ignore
     const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "user1")));
-    const users = snapshot.docs.map((doc) => doc.data())[0];
-    const data = users.roles;
+    const user = snapshot.docs.map((doc) => doc.data())[0];
+    const data = user.roles;
     setRoles(data);
     const rolesChoice = [];
     for (const key in data) {
