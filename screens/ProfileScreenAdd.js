@@ -2,7 +2,6 @@ import {
   Image,
   Keyboard,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -12,9 +11,11 @@ import {
 } from "react-native";
 import React, { Fragment, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { PROFILE_SCREEN } from "../constants";
 
 export default function ProfileScreenAdd() {
+  const exitBtn = require("../assets/exit_btn.png");
+
   const navigation = useNavigation();
   const [role, setRole] = useState("");
   const [dateDay, setDateDay] = useState("");
@@ -37,6 +38,11 @@ export default function ProfileScreenAdd() {
     };
   }, [navigation]);
 
+  function addRole() {
+    console.log("Adding Role!");
+    navigation.navigate(PROFILE_SCREEN.Home);
+  }
+
   return (
     // Fragment is used to split the SafeAreaView so that the top and bottom can be styled differently.
     <Fragment>
@@ -44,18 +50,20 @@ export default function ProfileScreenAdd() {
         style={{ flex: 0, backgroundColor: "#004BA0" }}
       ></SafeAreaView>
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-        <View style={styles.titleHeader}>
+        <View style={[styles.titleHeader, styles.flexRow]}>
           <Text style={styles.title}>ADD ROLE</Text>
-          <Text style={styles.title}>icon</Text>
+          <Image source={exitBtn} />
         </View>
+
+        {/* TouchableWithoutFeedback wrapper is to allow users to tap out of the keyboard */}
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={styles.container}>
             <View style={styles.loginContainer}>
               <Text style={styles.loginText}>Role:</Text>
               <TextInput
                 style={styles.loginInput}
-                value={""}
-                onChangeText={""}
+                value={role}
+                onChangeText={setRole}
               />
               <Text style={styles.loginText}>Passing Date:</Text>
               <View style={styles.dates}>
@@ -81,6 +89,16 @@ export default function ProfileScreenAdd() {
                 />
               </View>
             </View>
+            <View style={[styles.flexRow, styles.submitContainer]}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={async () => {
+                  await addRole();
+                }}
+              >
+                <Text style={styles.buttonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </TouchableWithoutFeedback>
       </SafeAreaView>
@@ -95,11 +113,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     backgroundColor: "white",
   },
-  titleHeader: {
-    width: "100%",
-    height: 85,
+  flexRow: {
     display: "flex",
     flexDirection: "row",
+    width: "100%",
+  },
+  titleHeader: {
+    height: 85,
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#004BA0",
@@ -142,5 +162,23 @@ const styles = StyleSheet.create({
     width: "25%",
     fontSize: 20,
     textAlign: "center",
+  },
+  submitContainer: {
+    justifyContent: "center",
+  },
+  button: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 120,
+    paddingVertical: 10,
+    marginTop: 34,
+    marginHorizontal: 20,
+    backgroundColor: "#004BA0",
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });

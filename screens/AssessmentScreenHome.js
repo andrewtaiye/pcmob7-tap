@@ -4,15 +4,20 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import ModalDropdown from "react-native-modal-dropdown";
 import { List } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import { ASSESSMENTS_SCREEN } from "../constants";
 
 export default function AssessmentScreenHome() {
+  const navigation = useNavigation();
+  const addBtn = require("../assets/add_btn.png");
+  const exitBtn = require("../assets/exit_btn.png");
+
   return (
     // Fragment is used to split the SafeAreaView so that the top and bottom can be styled differently.
     <Fragment>
@@ -22,7 +27,7 @@ export default function AssessmentScreenHome() {
       <SafeAreaView style={{ flex: 1, backgroundColor: "#1976D2" }}>
         <View style={styles.titleHeader}>
           <Text style={styles.title}>ASSESSMENTS</Text>
-          <Text style={styles.title}>icon</Text>
+          <Image source={exitBtn} />
         </View>
         <View style={styles.container}>
           <View style={styles.roleSelector}>
@@ -42,7 +47,13 @@ export default function AssessmentScreenHome() {
           <View style={styles.displayContainer}>
             <View style={styles.displayHeader}>
               <Text style={styles.displayHeaderText}>ROLE</Text>
-              <Text>Icon</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate(ASSESSMENTS_SCREEN.Add);
+                }}
+              >
+                <Image style={styles.logoTitle} source={addBtn} />
+              </TouchableOpacity>
             </View>
             <ScrollView>
               <View style={styles.displayAssessments}>
@@ -77,9 +88,15 @@ export default function AssessmentScreenHome() {
                   <List.Item
                     style={styles.displayItemStyle}
                     titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Edit"
-                    description="Delete"
+                    descriptionStyle={[
+                      styles.edit,
+                      styles.displayItemDescription,
+                    ]}
+                    onPress={() => {
+                      navigation.navigate(ASSESSMENTS_SCREEN.Update);
+                    }}
+                    title=""
+                    description="Edit"
                   />
                 </List.Accordion>
                 <List.Accordion
@@ -113,9 +130,12 @@ export default function AssessmentScreenHome() {
                   <List.Item
                     style={styles.displayItemStyle}
                     titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Edit"
-                    description="Delete"
+                    descriptionStyle={[
+                      styles.edit,
+                      styles.displayItemDescription,
+                    ]}
+                    title=""
+                    description="Edit"
                   />
                 </List.Accordion>
                 <List.Accordion
@@ -149,9 +169,12 @@ export default function AssessmentScreenHome() {
                   <List.Item
                     style={styles.displayItemStyle}
                     titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Edit"
-                    description="Delete"
+                    descriptionStyle={[
+                      styles.edit,
+                      styles.displayItemDescription,
+                    ]}
+                    title=""
+                    description="Edit"
                   />
                 </List.Accordion>
                 <List.Accordion
@@ -185,9 +208,12 @@ export default function AssessmentScreenHome() {
                   <List.Item
                     style={styles.displayItemStyle}
                     titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Edit"
-                    description="Delete"
+                    descriptionStyle={[
+                      styles.edit,
+                      styles.displayItemDescription,
+                    ]}
+                    title=""
+                    description="Edit"
                   />
                 </List.Accordion>
                 <List.Accordion
@@ -221,9 +247,12 @@ export default function AssessmentScreenHome() {
                   <List.Item
                     style={styles.displayItemStyle}
                     titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Edit"
-                    description="Delete"
+                    descriptionStyle={[
+                      styles.edit,
+                      styles.displayItemDescription,
+                    ]}
+                    title=""
+                    description="Edit"
                   />
                 </List.Accordion>
                 <List.Accordion
@@ -257,9 +286,12 @@ export default function AssessmentScreenHome() {
                   <List.Item
                     style={styles.displayItemStyle}
                     titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Edit"
-                    description="Delete"
+                    descriptionStyle={[
+                      styles.edit,
+                      styles.displayItemDescription,
+                    ]}
+                    title=""
+                    description="Edit"
                   />
                 </List.Accordion>
                 <List.Accordion
@@ -293,9 +325,12 @@ export default function AssessmentScreenHome() {
                   <List.Item
                     style={styles.displayItemStyle}
                     titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Edit"
-                    description="Delete"
+                    descriptionStyle={[
+                      styles.edit,
+                      styles.displayItemDescription,
+                    ]}
+                    title=""
+                    description="Edit"
                   />
                 </List.Accordion>
                 <List.Accordion
@@ -329,9 +364,12 @@ export default function AssessmentScreenHome() {
                   <List.Item
                     style={styles.displayItemStyle}
                     titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Edit"
-                    description="Delete"
+                    descriptionStyle={[
+                      styles.edit,
+                      styles.displayItemDescription,
+                    ]}
+                    title=""
+                    description="Edit"
                   />
                 </List.Accordion>
               </View>
@@ -437,5 +475,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "right",
     marginTop: -16,
+  },
+  edit: {
+    color: "red",
   },
 });

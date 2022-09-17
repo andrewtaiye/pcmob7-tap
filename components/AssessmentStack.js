@@ -19,14 +19,14 @@ export default function AssessmentStack() {
         name={ASSESSMENTS_SCREEN.Home}
         component={AssessmentScreenHome}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name={ASSESSMENTS_SCREEN.Add}
         component={AssessmentScreenAdd}
       />
       <Stack.Screen
         name={ASSESSMENTS_SCREEN.Update}
         component={AssessmentScreenUpdate}
-      /> */}
+      />
     </Stack.Navigator>
   );
 }

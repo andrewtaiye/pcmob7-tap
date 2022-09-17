@@ -4,17 +4,18 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import { List } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { PROFILE_SCREEN } from "../constants";
 
 export default function ProfileScreenHome() {
   const navigation = useNavigation();
+  const addBtn = require("../assets/add_btn.png");
+  const exitBtn = require("../assets/exit_btn.png");
 
   return (
     // Fragment is used to split the SafeAreaView so that the top and bottom can be styled differently.
@@ -25,7 +26,7 @@ export default function ProfileScreenHome() {
       <SafeAreaView style={{ flex: 1, backgroundColor: "#1976D2" }}>
         <View style={styles.titleHeader}>
           <Text style={styles.title}>PROFILE</Text>
-          <Text style={styles.title}>icon</Text>
+          <Image source={exitBtn} />
         </View>
         <View style={styles.container}>
           <View style={styles.profileContainer}>
@@ -37,13 +38,13 @@ export default function ProfileScreenHome() {
           </View>
           <View style={styles.displayContainer}>
             <View style={styles.displayHeader}>
-              <Text style={styles.displayHeaderText}>ROLES:</Text>
+              <Text style={styles.displayHeaderText}>ROLES</Text>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate(PROFILE_SCREEN.Add);
                 }}
               >
-                <Text>Icon</Text>
+                <Image style={styles.logoTitle} source={addBtn} />
               </TouchableOpacity>
             </View>
             <ScrollView>
@@ -52,6 +53,9 @@ export default function ProfileScreenHome() {
                   style={styles.displayItemStyle}
                   titleStyle={styles.displayItemTitle}
                   descriptionStyle={styles.displayItemDescription}
+                  onPress={() => {
+                    navigation.navigate(PROFILE_SCREEN.Update);
+                  }}
                   title="Role 1"
                   description="Passing Date"
                 />

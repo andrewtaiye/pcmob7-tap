@@ -62,6 +62,8 @@ export default function AuthScreen() {
         <View style={styles.logoTitleHeader}>
           <Image style={styles.logoTitle} source={logoTitle} />
         </View>
+
+        {/* TouchableWithoutFeedback wrapper is to allow users to tap out of the keyboard*/}
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={styles.container}>
             <Image style={styles.logo} source={logo} />

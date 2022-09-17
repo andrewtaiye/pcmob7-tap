@@ -17,10 +17,10 @@ export default function ProfileStack() {
     >
       <Stack.Screen name={PROFILE_SCREEN.Home} component={ProfileScreenHome} />
       <Stack.Screen name={PROFILE_SCREEN.Add} component={ProfileScreenAdd} />
-      {/* <Stack.Screen
+      <Stack.Screen
         name={PROFILE_SCREEN.Update}
         component={ProfileScreenUpdate}
-      /> */}
+      />
     </Stack.Navigator>
   );
 }
