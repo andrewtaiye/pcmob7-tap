@@ -2,7 +2,6 @@ import { ASSESSMENTS_SCREEN } from "../constants";
 import {
   Image,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -15,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
+import { FlatList } from "react-native-gesture-handler";
 
 export default function AssessmentScreenHome() {
   const addBtn = require("../assets/add_btn.png");
@@ -32,69 +32,11 @@ export default function AssessmentScreenHome() {
 
   useEffect(() => {
     const pickedRoleAssessments = roles[choice];
-
     const displayArray = [];
 
     for (const assessment in pickedRoleAssessments) {
       if (assessment !== "name") {
-        const date = pickedRoleAssessments[assessment].date
-          .toDate()
-          .toDateString();
-
-        let pass = "";
-        if (pickedRoleAssessments[assessment].pass) {
-          pass = "Pass";
-        } else {
-          pass = "Fail";
-        }
-
-        const display = (
-          <List.Accordion
-            style={styles.displayAccordion}
-            titleStyle={styles.displayAccordionTitle}
-            descriptionStyle={styles.displayAccordionDescription}
-            title={`Assessment ${pickedRoleAssessments[assessment].id}`}
-            description={`${
-              pickedRoleAssessments[assessment].gradeA +
-              pickedRoleAssessments[assessment].gradeB +
-              pickedRoleAssessments[assessment].gradeC
-            } / 30`}
-          >
-            <List.Item
-              style={styles.displayItemStyle}
-              titleStyle={styles.displayItemTitle}
-              descriptionStyle={styles.displayItemDescription}
-              title={`${pickedRoleAssessments[assessment].instructor}`}
-              description={`${date}`}
-            />
-            <List.Item
-              style={styles.displayItemStyle}
-              titleStyle={styles.displayItemTitle}
-              descriptionStyle={styles.displayItemDescription}
-              titleNumberOfLines={3}
-              title={`Objective - ${pickedRoleAssessments[assessment].objective}`}
-            />
-            <List.Item
-              style={styles.displayItemStyle}
-              titleStyle={styles.displayItemTitle}
-              descriptionStyle={styles.displayItemDescription}
-              title={`A: [${pickedRoleAssessments[assessment].gradeA}]    B: [${pickedRoleAssessments[assessment].gradeB}]    C: [${pickedRoleAssessments[assessment].gradeC}]    `}
-              description={`${pass}`}
-            />
-            <List.Item
-              style={styles.displayItemStyle}
-              titleStyle={styles.displayItemTitle}
-              descriptionStyle={[styles.edit, styles.displayItemDescription]}
-              onPress={() => {
-                navigation.navigate(ASSESSMENTS_SCREEN.Update);
-              }}
-              title=""
-              description="Edit"
-            />
-          </List.Accordion>
-        );
-
-        displayArray.push(display);
+        displayArray.push(pickedRoleAssessments[assessment]);
       }
     }
     setAssessments(displayArray);
@@ -113,24 +55,58 @@ export default function AssessmentScreenHome() {
     setRoles(data);
   }
 
-  // "assessment1": Object {
-  //   "date": Object {
-  //     "nanoseconds": 184000000,
-  //     "seconds": 1663344000,
-  //   },
-  //   "gradeA": 5,
-  //   "gradeB": 5,
-  //   "gradeC": 5,
-  //   "gradePercent": 50,
-  //   "id": 1,
-  //   "instructor": "instructor",
-  //   "objective": "test objective",
-  //   "pass": true,
-  // },
+  function renderItem({ item }) {
+    const date = item.date.toDate().toDateString();
 
-  const AssessmentDisplay = () => {
-    return <View style={styles.displayAssessments}>{assessments}</View>;
-  };
+    let pass = "";
+    if (item.pass) {
+      pass = "Pass";
+    } else {
+      pass = "Fail";
+    }
+
+    return (
+      <List.Accordion
+        style={styles.displayAccordion}
+        titleStyle={styles.displayAccordionTitle}
+        descriptionStyle={styles.displayAccordionDescription}
+        title={`Assessment ${item.id}`}
+        description={`${item.gradeA + item.gradeB + item.gradeC} / 30`}
+      >
+        <List.Item
+          style={styles.displayItemStyle}
+          titleStyle={styles.displayItemTitle}
+          descriptionStyle={styles.displayItemDescription}
+          title={`Instructor: ${item.instructor}`}
+          description={date}
+        />
+        <List.Item
+          style={styles.displayItemStyle}
+          titleStyle={styles.displayItemTitle}
+          descriptionStyle={styles.displayItemDescription}
+          titleNumberOfLines={3}
+          title={`Objective ${item.objective}`}
+        />
+        <List.Item
+          style={styles.displayItemStyle}
+          titleStyle={styles.displayItemTitle}
+          descriptionStyle={styles.displayItemDescription}
+          title={`A: [${item.gradeA}]    B: [${item.gradeB}]    C: [${item.gradeC}]`}
+          description={pass}
+        />
+        <List.Item
+          style={styles.displayItemStyle}
+          titleStyle={styles.displayItemTitle}
+          descriptionStyle={[styles.edit, styles.displayItemDescription]}
+          onPress={() => {
+            navigation.navigate(ASSESSMENTS_SCREEN.Update, item);
+          }}
+          title=""
+          description="Edit"
+        />
+      </List.Accordion>
+    );
+  }
 
   return (
     // Fragment is used to split the SafeAreaView so that the top and bottom can be styled differently.
@@ -172,9 +148,11 @@ export default function AssessmentScreenHome() {
                 <Image style={styles.logoTitle} source={addBtn} />
               </TouchableOpacity>
             </View>
-            <ScrollView>
-              <AssessmentDisplay />
-            </ScrollView>
+            <FlatList
+              data={assessments}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+            />
           </View>
         </View>
       </SafeAreaView>
