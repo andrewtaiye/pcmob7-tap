@@ -46,7 +46,7 @@ export default function AssessmentScreenHome() {
           </View>
           <View style={styles.displayContainer}>
             <View style={styles.displayHeader}>
-              <Text style={styles.displayHeaderText}>ROLE</Text>
+              <Text style={styles.displayHeaderText}>--Role Here--</Text>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate(ASSESSMENTS_SCREEN.Add);
