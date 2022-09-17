@@ -13,13 +13,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ASSESSMENTS_SCREEN } from "../constants";
 
-import {
-  deleteField,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { deleteField, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function AssessmentScreenUpdate() {
@@ -32,7 +26,6 @@ export default function AssessmentScreenUpdate() {
   const id = params.id;
 
   const [user, setUser] = useState({});
-  const [userDocData, setUserDocData] = useState({});
 
   const [instructor, setInstructor] = useState(params.instructor);
   const [dateDay, setDateDay] = useState(params.dateDay.toString());
@@ -67,10 +60,7 @@ export default function AssessmentScreenUpdate() {
   async function getData() {
     // prettier-ignore
     const userDocRef = await doc(db, 'users', params.username)
-    const userDoc = await getDoc(userDocRef);
     setUser(userDocRef);
-    setUserDocData(userDoc.data());
-    updateAssessmentId();
   }
 
   function updateAssessment() {
