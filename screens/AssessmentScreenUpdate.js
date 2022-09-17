@@ -10,13 +10,29 @@ import {
   View,
 } from "react-native";
 import React, { Fragment, useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { ASSESSMENTS_SCREEN } from "../constants";
+
+import {
+  deleteField,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function AssessmentScreenUpdate() {
   const exitBtn = require("../assets/exit_btn.png");
 
   const navigation = useNavigation();
+  const route = useRoute();
+  const params = route.params;
+  const choice = params.choice;
+
+  const [user, setUser] = useState({});
+  const [userDocData, setUserDocData] = useState({});
+
   const [instructor, setInstructor] = useState("");
   const [dateDay, setDateDay] = useState("");
   const [dateMonth, setDateMonth] = useState("");
@@ -43,14 +59,35 @@ export default function AssessmentScreenUpdate() {
     };
   }, [navigation]);
 
+  useEffect(() => {
+    getData();
+  }, []);
+
+  async function getData() {
+    // prettier-ignore
+    const userDocRef = await doc(db, 'users', params.username)
+    const userDoc = await getDoc(userDocRef);
+    setUser(userDocRef);
+    setUserDocData(userDoc.data());
+  }
+
   function updateAssessment() {
     console.log("Updating Assessment!");
     navigation.navigate(ASSESSMENTS_SCREEN.Home);
   }
 
   function deleteAssessment() {
-    console.log("Deleting Assessment!");
-    navigation.navigate(ASSESSMENTS_SCREEN.Home);
+    console.log(`roles.${choice}.assesment${params.id}`);
+    updateDoc(user, {
+      [`roles.${choice}.assessment${params.id}`]: deleteField(),
+    })
+      .then(() => {
+        console.log("Deleting Assessment!");
+        navigation.navigate(ASSESSMENTS_SCREEN.Home);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   return (

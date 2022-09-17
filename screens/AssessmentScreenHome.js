@@ -107,6 +107,7 @@ export default function AssessmentScreenHome() {
             navigation.navigate(ASSESSMENTS_SCREEN.Update, {
               ...item,
               choice,
+              username,
             });
           }}
           title=""

@@ -93,12 +93,11 @@ export default function AssessmentScreenAdd() {
     setDoc(user, newAssessment, { merge: true })
       .then(() => {
         console.log("Adding Assessment!");
+        navigation.navigate(ASSESSMENTS_SCREEN.Home);
       })
       .catch((error) => {
         console.log(error);
       });
-
-    navigation.navigate(ASSESSMENTS_SCREEN.Home);
   }
 
   return (
