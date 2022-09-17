@@ -1,21 +1,62 @@
 import {
   Image,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { List } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { PROFILE_SCREEN } from "../constants";
+
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../firebase";
+import { FlatList } from "react-native-gesture-handler";
 
 export default function ProfileScreenHome() {
   const navigation = useNavigation();
   const addBtn = require("../assets/add_btn.png");
   const exitBtn = require("../assets/exit_btn.png");
+
+  const [roles, setRoles] = useState({});
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  async function getData() {
+    // prettier-ignore
+    const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "myUsername")));
+    const data = snapshot.docs.map((doc) => doc.data())[0].roles;
+    const displayArray = [];
+    for (const key in data) {
+      const displayItem = {};
+      displayItem.name = data[key].name;
+      displayItem.passingDate = data[key].passingDate;
+      displayArray.push(displayItem);
+    }
+    displayArray.sort((a, b) => a - b);
+    setRoles(displayArray);
+  }
+
+  function renderItem({ item }) {
+    const date = item.passingDate.toDate().toDateString();
+
+    return (
+      <List.Item
+        style={styles.displayItemStyle}
+        titleStyle={styles.displayItemTitle}
+        descriptionStyle={styles.displayItemDescription}
+        onPress={() => {
+          navigation.navigate(PROFILE_SCREEN.Update);
+        }}
+        title={item.name}
+        description={date}
+      />
+    );
+  }
 
   return (
     // Fragment is used to split the SafeAreaView so that the top and bottom can be styled differently.
@@ -47,48 +88,11 @@ export default function ProfileScreenHome() {
                 <Image style={styles.logoTitle} source={addBtn} />
               </TouchableOpacity>
             </View>
-            <ScrollView>
-              <View style={styles.displayAssessments}>
-                <List.Item
-                  style={styles.displayItemStyle}
-                  titleStyle={styles.displayItemTitle}
-                  descriptionStyle={styles.displayItemDescription}
-                  onPress={() => {
-                    navigation.navigate(PROFILE_SCREEN.Update);
-                  }}
-                  title="Role 1"
-                  description="Passing Date"
-                />
-                <List.Item
-                  style={styles.displayItemStyle}
-                  titleStyle={styles.displayItemTitle}
-                  descriptionStyle={styles.displayItemDescription}
-                  title="Role 2"
-                  description="Passing Date"
-                />
-                <List.Item
-                  style={styles.displayItemStyle}
-                  titleStyle={styles.displayItemTitle}
-                  descriptionStyle={styles.displayItemDescription}
-                  title="Role 3"
-                  description="Passing Date"
-                />
-                <List.Item
-                  style={styles.displayItemStyle}
-                  titleStyle={styles.displayItemTitle}
-                  descriptionStyle={styles.displayItemDescription}
-                  title="Role 4"
-                  description="Passing Date"
-                />
-                <List.Item
-                  style={styles.displayItemStyle}
-                  titleStyle={styles.displayItemTitle}
-                  descriptionStyle={styles.displayItemDescription}
-                  title="Role 5"
-                  description="Passing Date"
-                />
-              </View>
-            </ScrollView>
+            <FlatList
+              data={roles}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.name}
+            />
           </View>
         </View>
       </SafeAreaView>
