@@ -13,50 +13,124 @@ import ModalDropdown from "react-native-modal-dropdown";
 import { List } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 
-import {
-  collection,
-  firebase,
-  getDocs,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function AssessmentScreenHome() {
   const addBtn = require("../assets/add_btn.png");
   const exitBtn = require("../assets/exit_btn.png");
 
-  const roleObject = {
-    role1: "Role 1",
-    role2: "Role 2",
-    role3: "Role 3",
-  };
-
   const navigation = useNavigation();
-  const [role, setRole] = useState("");
+  const [choice, setChoice] = useState("");
   const [roles, setRoles] = useState({});
+  const [rolesChoice, setRolesChoice] = useState([]);
   const [assessments, setAssessments] = useState([]);
 
-  const getData = async () => {
+  useEffect(() => {
+    getData();
+  }, []);
+
+  useEffect(() => {
+    const pickedRoleAssessments = roles[choice];
+
+    const displayArray = [];
+
+    for (const assessment in pickedRoleAssessments) {
+      if (assessment !== "name") {
+        const date = pickedRoleAssessments[assessment].date
+          .toDate()
+          .toDateString();
+
+        let pass = "";
+        if (pickedRoleAssessments[assessment].pass) {
+          pass = "Pass";
+        } else {
+          pass = "Fail";
+        }
+
+        const display = (
+          <List.Accordion
+            style={styles.displayAccordion}
+            titleStyle={styles.displayAccordionTitle}
+            descriptionStyle={styles.displayAccordionDescription}
+            title={`Assessment ${pickedRoleAssessments[assessment].id}`}
+            description={`${
+              pickedRoleAssessments[assessment].gradeA +
+              pickedRoleAssessments[assessment].gradeB +
+              pickedRoleAssessments[assessment].gradeC
+            } / 30`}
+          >
+            <List.Item
+              style={styles.displayItemStyle}
+              titleStyle={styles.displayItemTitle}
+              descriptionStyle={styles.displayItemDescription}
+              title={`${pickedRoleAssessments[assessment].instructor}`}
+              description={`${date}`}
+            />
+            <List.Item
+              style={styles.displayItemStyle}
+              titleStyle={styles.displayItemTitle}
+              descriptionStyle={styles.displayItemDescription}
+              titleNumberOfLines={3}
+              title={`Objective - ${pickedRoleAssessments[assessment].objective}`}
+            />
+            <List.Item
+              style={styles.displayItemStyle}
+              titleStyle={styles.displayItemTitle}
+              descriptionStyle={styles.displayItemDescription}
+              title={`A: [${pickedRoleAssessments[assessment].gradeA}]    B: [${pickedRoleAssessments[assessment].gradeB}]    C: [${pickedRoleAssessments[assessment].gradeC}]    `}
+              description={`${pass}`}
+            />
+            <List.Item
+              style={styles.displayItemStyle}
+              titleStyle={styles.displayItemTitle}
+              descriptionStyle={[styles.edit, styles.displayItemDescription]}
+              onPress={() => {
+                navigation.navigate(ASSESSMENTS_SCREEN.Update);
+              }}
+              title=""
+              description="Edit"
+            />
+          </List.Accordion>
+        );
+
+        displayArray.push(display);
+      }
+    }
+    setAssessments(displayArray);
+  }, [choice]);
+
+  async function getData() {
     // prettier-ignore
     const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "myUsername")));
     const data = snapshot.docs.map((doc) => doc.data())[0].roles;
+    const rolesChoice = [];
+    for (const key in data) {
+      rolesChoice.push(data[key].name);
+    }
+    rolesChoice.sort((a, b) => a - b);
+    setRolesChoice(rolesChoice);
     setRoles(data);
-  };
-
-  function getSelectedRole() {
-    console.log(role);
-    const selectedRole = Object.keys(roles).find(
-      (key) => roleObject[key] === role
-    );
-
-    console.log(selectedRole);
   }
 
-  useEffect(() => {
-    // getSelectedRole();
-  }, []);
+  // "assessment1": Object {
+  //   "date": Object {
+  //     "nanoseconds": 184000000,
+  //     "seconds": 1663344000,
+  //   },
+  //   "gradeA": 5,
+  //   "gradeB": 5,
+  //   "gradeC": 5,
+  //   "gradePercent": 50,
+  //   "id": 1,
+  //   "instructor": "instructor",
+  //   "objective": "test objective",
+  //   "pass": true,
+  // },
+
+  const AssessmentDisplay = () => {
+    return <View style={styles.displayAssessments}>{assessments}</View>;
+  };
 
   return (
     // Fragment is used to split the SafeAreaView so that the top and bottom can be styled differently.
@@ -82,18 +156,14 @@ export default function AssessmentScreenHome() {
                 textAlign: "center",
               }}
               onSelect={(index, value) => {
-                setRole(value);
-                console.log(value);
-                setTimeout(() => {
-                  getSelectedRole();
-                }, 100);
+                setChoice(value);
               }}
-              options={["Role 1", "Role 2", "Role 3"]}
+              options={rolesChoice}
             />
           </View>
           <View style={styles.displayContainer}>
             <View style={styles.displayHeader}>
-              <Text style={styles.displayHeaderText}>{role}</Text>
+              <Text style={styles.displayHeaderText}>{choice}</Text>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate(ASSESSMENTS_SCREEN.Add);
@@ -103,323 +173,7 @@ export default function AssessmentScreenHome() {
               </TouchableOpacity>
             </View>
             <ScrollView>
-              <View style={styles.displayAssessments}>
-                <List.Accordion
-                  style={styles.displayAccordion}
-                  titleStyle={styles.displayAccordionTitle}
-                  descriptionStyle={styles.displayAccordionDescription}
-                  title="Assessment 1"
-                  description="Grade %"
-                >
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Instructor"
-                    description="Date and Time"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    titleNumberOfLines={3}
-                    title="Objective - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis cursus turpis, et lobortis risus accumsan ut."
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="A: []    B: []    C: []"
-                    description="Pass"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={[
-                      styles.edit,
-                      styles.displayItemDescription,
-                    ]}
-                    onPress={() => {
-                      navigation.navigate(ASSESSMENTS_SCREEN.Update);
-                    }}
-                    title=""
-                    description="Edit"
-                  />
-                </List.Accordion>
-                <List.Accordion
-                  style={styles.displayAccordion}
-                  titleStyle={styles.displayAccordionTitle}
-                  descriptionStyle={styles.displayAccordionDescription}
-                  title="Assessment 2"
-                  description="Grade %"
-                >
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Instructor"
-                    description="Date and Time"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    titleNumberOfLines={3}
-                    title="Objective - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis cursus turpis, et lobortis risus accumsan ut."
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="A: []    B: []    C: []"
-                    description="Pass"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={[
-                      styles.edit,
-                      styles.displayItemDescription,
-                    ]}
-                    title=""
-                    description="Edit"
-                  />
-                </List.Accordion>
-                <List.Accordion
-                  style={styles.displayAccordion}
-                  titleStyle={styles.displayAccordionTitle}
-                  descriptionStyle={styles.displayAccordionDescription}
-                  title="Assessment 3"
-                  description="Grade %"
-                >
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Instructor"
-                    description="Date and Time"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    titleNumberOfLines={3}
-                    title="Objective - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis cursus turpis, et lobortis risus accumsan ut."
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="A: []    B: []    C: []"
-                    description="Pass"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={[
-                      styles.edit,
-                      styles.displayItemDescription,
-                    ]}
-                    title=""
-                    description="Edit"
-                  />
-                </List.Accordion>
-                <List.Accordion
-                  style={styles.displayAccordion}
-                  titleStyle={styles.displayAccordionTitle}
-                  descriptionStyle={styles.displayAccordionDescription}
-                  title="Assessment 4"
-                  description="Grade %"
-                >
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Instructor"
-                    description="Date and Time"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    titleNumberOfLines={3}
-                    title="Objective - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis cursus turpis, et lobortis risus accumsan ut."
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="A: []    B: []    C: []"
-                    description="Pass"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={[
-                      styles.edit,
-                      styles.displayItemDescription,
-                    ]}
-                    title=""
-                    description="Edit"
-                  />
-                </List.Accordion>
-                <List.Accordion
-                  style={styles.displayAccordion}
-                  titleStyle={styles.displayAccordionTitle}
-                  descriptionStyle={styles.displayAccordionDescription}
-                  title="Assessment 5"
-                  description="Grade %"
-                >
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Instructor"
-                    description="Date and Time"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    titleNumberOfLines={3}
-                    title="Objective - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis cursus turpis, et lobortis risus accumsan ut."
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="A: []    B: []    C: []"
-                    description="Pass"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={[
-                      styles.edit,
-                      styles.displayItemDescription,
-                    ]}
-                    title=""
-                    description="Edit"
-                  />
-                </List.Accordion>
-                <List.Accordion
-                  style={styles.displayAccordion}
-                  titleStyle={styles.displayAccordionTitle}
-                  descriptionStyle={styles.displayAccordionDescription}
-                  title="Assessment 6"
-                  description="Grade %"
-                >
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Instructor"
-                    description="Date and Time"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    titleNumberOfLines={3}
-                    title="Objective - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis cursus turpis, et lobortis risus accumsan ut."
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="A: []    B: []    C: []"
-                    description="Pass"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={[
-                      styles.edit,
-                      styles.displayItemDescription,
-                    ]}
-                    title=""
-                    description="Edit"
-                  />
-                </List.Accordion>
-                <List.Accordion
-                  style={styles.displayAccordion}
-                  titleStyle={styles.displayAccordionTitle}
-                  descriptionStyle={styles.displayAccordionDescription}
-                  title="Assessment 7"
-                  description="Grade %"
-                >
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Instructor"
-                    description="Date and Time"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    titleNumberOfLines={3}
-                    title="Objective - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis cursus turpis, et lobortis risus accumsan ut."
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="A: []    B: []    C: []"
-                    description="Pass"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={[
-                      styles.edit,
-                      styles.displayItemDescription,
-                    ]}
-                    title=""
-                    description="Edit"
-                  />
-                </List.Accordion>
-                <List.Accordion
-                  style={styles.displayAccordion}
-                  titleStyle={styles.displayAccordionTitle}
-                  descriptionStyle={styles.displayAccordionDescription}
-                  title="Assessment 8"
-                  description="Grade %"
-                >
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="Instructor"
-                    description="Date and Time"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    titleNumberOfLines={3}
-                    title="Objective - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis cursus turpis, et lobortis risus accumsan ut."
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={styles.displayItemDescription}
-                    title="A: []    B: []    C: []"
-                    description="Pass"
-                  />
-                  <List.Item
-                    style={styles.displayItemStyle}
-                    titleStyle={styles.displayItemTitle}
-                    descriptionStyle={[
-                      styles.edit,
-                      styles.displayItemDescription,
-                    ]}
-                    title=""
-                    description="Edit"
-                  />
-                </List.Accordion>
-              </View>
+              <AssessmentDisplay />
             </ScrollView>
           </View>
         </View>
