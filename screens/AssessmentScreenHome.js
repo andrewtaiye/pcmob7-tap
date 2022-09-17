@@ -47,7 +47,7 @@ export default function AssessmentScreenHome() {
 
   async function getData() {
     // prettier-ignore
-    const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "myUsername")));
+    const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "user1")));
     const users = snapshot.docs.map((doc) => doc.data())[0];
     const data = users.roles;
     setRoles(data);
@@ -60,8 +60,6 @@ export default function AssessmentScreenHome() {
   }
 
   function renderItem({ item }) {
-    const date = item.date.toDate().toDateString();
-
     let pass = "";
     if (item.pass) {
       pass = "Pass";
@@ -82,7 +80,7 @@ export default function AssessmentScreenHome() {
           titleStyle={styles.displayItemTitle}
           descriptionStyle={styles.displayItemDescription}
           title={`Instructor: ${item.instructor}`}
-          description={date}
+          description={`${item.dateDay} / ${item.dateMonth} / ${item.dateYear}`}
         />
         <List.Item
           style={styles.displayItemStyle}
@@ -103,7 +101,7 @@ export default function AssessmentScreenHome() {
           titleStyle={styles.displayItemTitle}
           descriptionStyle={[styles.edit, styles.displayItemDescription]}
           onPress={() => {
-            navigation.navigate(ASSESSMENTS_SCREEN.Update, item);
+            navigation.navigate(ASSESSMENTS_SCREEN.Update, { ...item, choice });
           }}
           title=""
           description="Edit"
