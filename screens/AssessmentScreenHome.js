@@ -39,6 +39,10 @@ export default function AssessmentScreenHome() {
         displayArray.push(pickedRoleAssessments[assessment]);
       }
     }
+    displayArray.sort((a, b) => {
+      return a.id - b.id;
+    });
+
     setAssessments(displayArray);
   }, [choice]);
 
@@ -46,13 +50,15 @@ export default function AssessmentScreenHome() {
     // prettier-ignore
     const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "myUsername")));
     const data = snapshot.docs.map((doc) => doc.data())[0].roles;
+    setRoles(data);
     const rolesChoice = [];
     for (const key in data) {
       rolesChoice.push(data[key].name);
     }
-    rolesChoice.sort((a, b) => a - b);
+    rolesChoice.sort((a, b) => {
+      return a - b;
+    });
     setRolesChoice(rolesChoice);
-    setRoles(data);
   }
 
   function renderItem({ item }) {
