@@ -23,10 +23,10 @@ export default function ProfileScreenHome() {
   const [roles, setRoles] = useState({});
 
   useEffect(() => {
-    getProfileData();
+    getData();
   }, []);
 
-  async function getProfileData() {
+  async function getData() {
     // prettier-ignore
     const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "myUsername")));
     const users = snapshot.docs.map((doc) => doc.data())[0];

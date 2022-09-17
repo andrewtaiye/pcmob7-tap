@@ -27,7 +27,7 @@ export default function AssessmentScreenHome() {
   const [assessments, setAssessments] = useState([]);
 
   useEffect(() => {
-    getUserData();
+    getData();
   }, []);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function AssessmentScreenHome() {
     setAssessments(displayArray);
   }, [choice]);
 
-  async function getUserData() {
+  async function getData() {
     // prettier-ignore
     const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "myUsername")));
     const users = snapshot.docs.map((doc) => doc.data())[0];
