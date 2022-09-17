@@ -13,14 +13,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ASSESSMENTS_SCREEN } from "../constants";
 
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function AssessmentScreenAdd() {
@@ -32,6 +25,7 @@ export default function AssessmentScreenAdd() {
   const choice = params.choice;
 
   const [user, setUser] = useState({});
+  const [userDocData, setUserDocData] = useState({});
 
   const [instructor, setInstructor] = useState("");
   const [dateDay, setDateDay] = useState("");
@@ -65,12 +59,17 @@ export default function AssessmentScreenAdd() {
 
   async function getData() {
     // prettier-ignore
-    const snapshot = await doc(db, 'users', where('name', '==', 'user1'))
-    setUser(snapshot);
+    const userDocRef = await doc(db, 'users', params.username)
+    const userDoc = await getDoc(userDocRef);
+    setUser(userDocRef);
+    setUserDocData(userDoc.data());
   }
 
   function addAssessment() {
-    const id = 4;
+    const id =
+      Object.keys(userDocData.roles[choice]).filter(
+        (key) => key !== "name" && key !== "passingDate"
+      ).length + 1;
 
     const newAssessment = {
       roles: {

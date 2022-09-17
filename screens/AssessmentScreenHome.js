@@ -30,7 +30,7 @@ export default function AssessmentScreenHome() {
 
   useEffect(() => {
     getData();
-  }, [navigation]);
+  }, []);
 
   useEffect(() => {
     const pickedRoleAssessments = roles[choice];
@@ -49,7 +49,7 @@ export default function AssessmentScreenHome() {
 
   async function getData() {
     // prettier-ignore
-    const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "user1")));
+    const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "user_1")));
     const user = snapshot.docs.map((doc) => doc.data())[0];
     const data = user.roles;
     setUsername(user.name);
@@ -107,7 +107,6 @@ export default function AssessmentScreenHome() {
             navigation.navigate(ASSESSMENTS_SCREEN.Update, {
               ...item,
               choice,
-              username,
             });
           }}
           title=""
@@ -153,7 +152,10 @@ export default function AssessmentScreenHome() {
               </Text>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate(ASSESSMENTS_SCREEN.Add, { choice });
+                  navigation.navigate(ASSESSMENTS_SCREEN.Add, {
+                    choice,
+                    username,
+                  });
                 }}
               >
                 <Image style={styles.logoTitle} source={addBtn} />
