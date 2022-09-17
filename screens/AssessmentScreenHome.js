@@ -54,9 +54,7 @@ export default function AssessmentScreenHome() {
     for (const key in data) {
       rolesChoice.push(data[key].name);
     }
-    console.log(rolesChoice);
     rolesChoice.sort((a, b) => a > b);
-    console.log(rolesChoice);
     setRolesChoice(rolesChoice);
   }
 
@@ -144,7 +142,9 @@ export default function AssessmentScreenHome() {
           </View>
           <View style={styles.displayContainer}>
             <View style={styles.displayHeader}>
-              <Text style={styles.displayHeaderText}>{choice}</Text>
+              <Text style={styles.displayHeaderText}>
+                {choice ? choice : "Select a role"}
+              </Text>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate(ASSESSMENTS_SCREEN.Add);
