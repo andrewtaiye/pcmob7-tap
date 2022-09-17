@@ -29,19 +29,20 @@ export default function AssessmentScreenUpdate() {
   const route = useRoute();
   const params = route.params;
   const choice = params.choice;
+  const id = params.id;
 
   const [user, setUser] = useState({});
   const [userDocData, setUserDocData] = useState({});
 
-  const [instructor, setInstructor] = useState("");
-  const [dateDay, setDateDay] = useState("");
-  const [dateMonth, setDateMonth] = useState("");
-  const [dateYear, setDateYear] = useState("");
-  const [objective, setObjective] = useState("");
-  const [gradeA, setGradeA] = useState("");
-  const [gradeB, setGradeB] = useState("");
-  const [gradeC, setGradeC] = useState("");
-  const [passFail, setPassFail] = useState("");
+  const [instructor, setInstructor] = useState(params.instructor);
+  const [dateDay, setDateDay] = useState(params.dateDay.toString());
+  const [dateMonth, setDateMonth] = useState(params.dateMonth.toString());
+  const [dateYear, setDateYear] = useState(params.dateYear.toString());
+  const [objective, setObjective] = useState(params.objective);
+  const [gradeA, setGradeA] = useState(params.gradeA.toString());
+  const [gradeB, setGradeB] = useState(params.gradeB.toString());
+  const [gradeC, setGradeC] = useState(params.gradeC.toString());
+  const [passFail, setPassFail] = useState(params.pass.toString());
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -69,17 +70,36 @@ export default function AssessmentScreenUpdate() {
     const userDoc = await getDoc(userDocRef);
     setUser(userDocRef);
     setUserDocData(userDoc.data());
+    updateAssessmentId();
   }
 
   function updateAssessment() {
-    console.log("Updating Assessment!");
-    navigation.navigate(ASSESSMENTS_SCREEN.Home);
+    updateDoc(user, {
+      [`roles.${choice}.assessment${params.id}`]: {
+        id: id,
+        instructor: instructor,
+        dateDay: parseInt(dateDay),
+        dateMonth: parseInt(dateMonth),
+        dateYear: parseInt(dateYear),
+        objective: objective,
+        gradeA: parseInt(gradeA),
+        gradeB: parseInt(gradeB),
+        gradeC: parseInt(gradeC),
+        pass: passFail.toLowerCase() === "true",
+      },
+    })
+      .then(() => {
+        console.log("Updating Assessment!");
+        navigation.navigate(ASSESSMENTS_SCREEN.Home);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   function deleteAssessment() {
-    console.log(`roles.${choice}.assesment${params.id}`);
     updateDoc(user, {
-      [`roles.${choice}.assessment${params.id}`]: deleteField(),
+      [`roles.${choice}.assessment${id}`]: deleteField(),
     })
       .then(() => {
         console.log("Deleting Assessment!");
@@ -148,18 +168,21 @@ export default function AssessmentScreenUpdate() {
                   style={[styles.textInput, styles.gradesInput]}
                   value={gradeA}
                   onChangeText={setGradeA}
+                  keyboardType={"numeric"}
                 />
                 <Text style={styles.labels}>B: </Text>
                 <TextInput
                   style={[styles.textInput, styles.gradesInput]}
                   value={gradeB}
                   onChangeText={setGradeB}
+                  keyboardType={"numeric"}
                 />
                 <Text style={styles.labels}>C: </Text>
                 <TextInput
                   style={[styles.textInput, styles.gradesInput]}
                   value={gradeC}
                   onChangeText={setGradeC}
+                  keyboardType={"numeric"}
                 />
               </View>
               <Text style={styles.labels}>Pass / Fail:</Text>
