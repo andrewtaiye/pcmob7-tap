@@ -1,3 +1,4 @@
+import { ASSESSMENTS_SCREEN } from "../constants";
 import {
   Image,
   SafeAreaView,
@@ -7,16 +8,55 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import ModalDropdown from "react-native-modal-dropdown";
 import { List } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import { ASSESSMENTS_SCREEN } from "../constants";
+
+import {
+  collection,
+  firebase,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function AssessmentScreenHome() {
-  const navigation = useNavigation();
   const addBtn = require("../assets/add_btn.png");
   const exitBtn = require("../assets/exit_btn.png");
+
+  const roleObject = {
+    role1: "Role 1",
+    role2: "Role 2",
+    role3: "Role 3",
+  };
+
+  const navigation = useNavigation();
+  const [role, setRole] = useState("");
+  const [roles, setRoles] = useState({});
+  const [assessments, setAssessments] = useState([]);
+
+  const getData = async () => {
+    // prettier-ignore
+    const snapshot = await getDocs(query(collection(db, "users"), where("name", "==", "myUsername")));
+    const data = snapshot.docs.map((doc) => doc.data())[0].roles;
+    setRoles(data);
+  };
+
+  function getSelectedRole() {
+    console.log(role);
+    const selectedRole = Object.keys(roles).find(
+      (key) => roleObject[key] === role
+    );
+
+    console.log(selectedRole);
+  }
+
+  useEffect(() => {
+    // getSelectedRole();
+  }, []);
 
   return (
     // Fragment is used to split the SafeAreaView so that the top and bottom can be styled differently.
@@ -41,12 +81,19 @@ export default function AssessmentScreenHome() {
                 width: 250,
                 textAlign: "center",
               }}
-              options={["Role1", "Role2", "Role3", "Role4", "Role5"]}
+              onSelect={(index, value) => {
+                setRole(value);
+                console.log(value);
+                setTimeout(() => {
+                  getSelectedRole();
+                }, 100);
+              }}
+              options={["Role 1", "Role 2", "Role 3"]}
             />
           </View>
           <View style={styles.displayContainer}>
             <View style={styles.displayHeader}>
-              <Text style={styles.displayHeaderText}>--Role Here--</Text>
+              <Text style={styles.displayHeaderText}>{role}</Text>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate(ASSESSMENTS_SCREEN.Add);

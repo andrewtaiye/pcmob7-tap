@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { HOME_STACK } from "../constants";
 import { useNavigation } from "@react-navigation/native";
 
@@ -23,6 +23,10 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoginScreen, setIsLoginScreen] = useState(true);
+
+  // useEffect(() => {
+  //   return () => setLoading(false);
+  // }, []);
 
   function resetTextInputs() {
     setUsername("");
